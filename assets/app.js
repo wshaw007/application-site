@@ -211,6 +211,7 @@
     prefillRegistration(slot);
 
     window.APPLICATION = { contact: state.contact, answers: state.answers };
+    reportConversion();
     confetti();
   }
 
@@ -233,6 +234,20 @@
       }
       if (!frame && tries++ < 40) setTimeout(attempt, 250);
     })();
+  }
+
+  /* ---------- Google Ads conversion ---------- */
+
+  // Fired once, only when the applicant reaches the congratulations screen.
+  // The email is passed for enhanced conversions; Google hashes it client-side.
+  function reportConversion() {
+    if (typeof window.gtag !== 'function' || state.conversionSent) return;
+    state.conversionSent = true;
+    window.gtag('set', 'user_data', {
+      email: state.contact.email,
+      address: { first_name: state.contact.first, last_name: state.contact.last }
+    });
+    window.gtag('event', 'conversion', { send_to: 'AW-18415020373/tFRzCLyMo5sdENXS-8xE' });
   }
 
   /* ---------- confetti ---------- */
